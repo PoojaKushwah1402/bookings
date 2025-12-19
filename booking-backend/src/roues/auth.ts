@@ -1,9 +1,10 @@
 import express from "express";
+import { login, logout, register } from "../controllers/authController";
 
-const app = express();
+const router = express.Router();
 
-app.use("/login");
-app.use("/register");
-app.use("/logout");
+router.post("/register", register);
+router.post("/login", login);
+router.post("/logout", logout);
 
-export default app;
+export default router;

@@ -1,11 +1,18 @@
 import express from "express";
+import {
+    createListing,
+    deleteListing,
+    getListing,
+    listListings,
+    updateListing,
+} from "../controllers/listingController";
 
-const app = express();
+const router = express.Router();
 
-app.get("/");
-app.get("/:id");
-app.post("/");
-app.patch("/:id");
-app.delete("/:id");
+router.get("/", listListings);
+router.get("/:id", getListing);
+router.post("/", createListing);
+router.patch("/:id", updateListing);
+router.delete("/:id", deleteListing);
 
-export default app;
+export default router;
