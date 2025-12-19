@@ -1,5 +1,5 @@
-import { dataStore } from "./dataStore";
-import type { AuthSession, User } from "../types/domain";
+import type {AuthSession} from "../types/domain";
+import {authRepo} from "../repositories/authRepo";
 
 export type RegisterInput = {
     name: string;
@@ -14,28 +14,31 @@ export type LoginInput = {
 
 export const authService = {
     async register(input: RegisterInput): Promise<AuthSession> {
-        const existing = dataStore.findUserByEmail(input.email);
+        const existing = await authRepo.findUserByEmail(input.email);
         if (existing) {
             throw new Error("User already exists");
         }
-        const user: User = dataStore.createUser({
+        const user = await authRepo.createUser({
             name: input.name.trim(),
             email: input.email.trim().toLowerCase(),
+            role: "host",
+            passwordHash: input.password // TODO: hash in real implementation
         });
-        return dataStore.createSession(user);
+        return authRepo.createSession(user);
     },
     async login(input: LoginInput): Promise<AuthSession> {
-        const user = dataStore.findUserByEmail(input.email.trim().toLowerCase());
-        if (!user) {
+        const user = await authRepo.findUserByEmail(input.email.trim().toLowerCase());
+        if (!user || user.passwordHash !== input.password) {
             throw new Error("Invalid credentials");
         }
-        return dataStore.createSession(user);
+        return authRepo.createSession(user);
     },
     async logout(token: string): Promise<void> {
-        dataStore.deleteSession(token);
+        await authRepo.deleteSession(token);
     },
     async current(token: string): Promise<AuthSession | null> {
-        return dataStore.findSession(token);
-    },
+        return authRepo.findSession(token);
+    }
 };
+
 

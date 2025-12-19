@@ -5,14 +5,10 @@ export type Listing = {
     state: string;
     keywords: string[];
     amenities: string[];
-    availability: {
-        startDate: string;
-        endDate: string;
-        note?: string;
-    };
+    note?: string;
 };
 
-export type BookingStatus = "confirmed" | "cancelled";
+export type BookingStatus = "pending" | "confirmed" | "cancelled";
 
 export type Booking = {
     id: string;
@@ -27,10 +23,12 @@ export type User = {
     id: string;
     name: string;
     email: string;
+    role: string;
 };
 
 export type AuthSession = {
     token: string;
     user: User;
 };
+
 

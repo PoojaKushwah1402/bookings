@@ -27,3 +27,4 @@ export type NewListingInput = Omit<Listing, 'id'>;
 
 export type BookingRequest = Omit<Booking, 'id' | 'status'>;
 
+

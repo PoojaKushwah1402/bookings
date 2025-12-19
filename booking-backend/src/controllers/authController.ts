@@ -45,3 +45,4 @@ export const logout: RequestHandler = async (req, res) => {
     return ok(res, { message: "Signed out" });
 };
 
+

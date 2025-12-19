@@ -73,3 +73,4 @@ export const useBookings = (): BookingsController => {
 
 export default useBookings;
 
+

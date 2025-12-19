@@ -1,24 +1,25 @@
-import { dataStore } from "./dataStore";
-import type { Listing } from "../types/domain";
+import type {Listing} from "../types/domain";
+import {listingRepo} from "../repositories/listingRepo";
 
 export type ListingInput = Omit<Listing, "id">;
 export type ListingPatch = Partial<Omit<Listing, "id">>;
 
 export const listingService = {
     async list(): Promise<Listing[]> {
-        return dataStore.listListings();
+        return listingRepo.list();
     },
     async get(id: string): Promise<Listing | null> {
-        return dataStore.findListing(id);
+        return listingRepo.get(id);
     },
     async create(input: ListingInput): Promise<Listing> {
-        return dataStore.saveListing(input);
+        return listingRepo.create(input);
     },
     async update(id: string, patch: ListingPatch): Promise<Listing | null> {
-        return dataStore.updateListing(id, patch);
+        return listingRepo.update(id, patch);
     },
     async remove(id: string): Promise<boolean> {
-        return dataStore.deleteListing(id);
-    },
+        return listingRepo.delete(id);
+    }
 };
+
 

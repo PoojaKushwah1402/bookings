@@ -106,3 +106,4 @@ export const AuthPanel = ({ user, loading, onSignIn, onSignOut }: AuthPanelProps
   );
 };
 
+
