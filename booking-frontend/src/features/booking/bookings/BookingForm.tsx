@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { BookingRequest, Listing } from '../types';
+import type { BookingRequest, Listing } from '../types';
 
 type BookingFormProps = {
   listings: Listing[];

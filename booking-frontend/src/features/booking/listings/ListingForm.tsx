@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { AvailabilityWindow, NewListingInput } from '../types';
+import type { AvailabilityWindow, NewListingInput } from '../types';
 
 type ListingFormProps = {
   onSubmit: (payload: NewListingInput) => Promise<void>;
@@ -67,7 +67,7 @@ export const ListingForm = ({ onSubmit, isSaving, disabled }: ListingFormProps) 
               onChange={(e) => updateField('title', e.target.value)}
               placeholder="Quiet loft near downtown"
               required
-            disabled={disabled}
+              disabled={disabled}
             />
           </div>
           <div className="field">
@@ -78,7 +78,7 @@ export const ListingForm = ({ onSubmit, isSaving, disabled }: ListingFormProps) 
               onChange={(e) => updateField('city', e.target.value)}
               placeholder="Austin"
               required
-            disabled={disabled}
+              disabled={disabled}
             />
           </div>
           <div className="field">
@@ -89,7 +89,7 @@ export const ListingForm = ({ onSubmit, isSaving, disabled }: ListingFormProps) 
               onChange={(e) => updateField('state', e.target.value)}
               placeholder="TX"
               required
-            disabled={disabled}
+              disabled={disabled}
             />
           </div>
         </div>
@@ -103,7 +103,7 @@ export const ListingForm = ({ onSubmit, isSaving, disabled }: ListingFormProps) 
               value={form.availability.startDate}
               onChange={(e) => updateAvailability('startDate', e.target.value)}
               required
-            disabled={disabled}
+              disabled={disabled}
             />
           </div>
           <div className="field">
@@ -114,7 +114,7 @@ export const ListingForm = ({ onSubmit, isSaving, disabled }: ListingFormProps) 
               value={form.availability.endDate}
               onChange={(e) => updateAvailability('endDate', e.target.value)}
               required
-            disabled={disabled}
+              disabled={disabled}
             />
           </div>
         </div>

@@ -4,23 +4,30 @@ import {
   ListingForm,
   ListingList,
   SectionCard,
+  useBookings,
+  useListings,
 } from '../features/booking';
-import { useBookingController } from '../features/booking/hooks/useBookingController';
 import { AuthPanel, useAuth } from '../features/auth';
 
 const AppShell = () => {
   const { user, loading: authLoading, signIn, signOut } = useAuth();
   const {
     listings,
-    bookings,
-    loading,
-    error,
-    busy,
+    loading: listingLoading,
+    error: listingError,
+    busyAdd,
     addListing,
     deleteListing,
+  } = useListings();
+  const {
+    bookings,
+    loading: bookingLoading,
+    error: bookingError,
+    busyCreate,
+    cancelId,
     createBooking,
     cancelBooking,
-  } = useBookingController();
+  } = useBookings();
   const locked = !user;
 
   return (
@@ -32,9 +39,9 @@ const AppShell = () => {
           Maintain listings with city, state, availability windows, amenities, and host-side
           bookings. All UI runs locally; wire the service layer to your backend when ready.
         </p>
-        {error ? (
+        {listingError || bookingError ? (
           <div className="card" style={{ borderColor: 'rgba(255,110,110,0.5)' }}>
-            {error}
+            {listingError || bookingError}
           </div>
         ) : null}
       </header>
@@ -46,7 +53,7 @@ const AppShell = () => {
           title="Create listing"
           description="Add a new stay with city, state, keywords, amenities, and availability."
         >
-          <ListingForm onSubmit={addListing} isSaving={busy.addListing} disabled={locked} />
+          <ListingForm onSubmit={addListing} isSaving={busyAdd} disabled={locked} />
           {locked ? (
             <p className="muted" style={{ marginTop: 8 }}>
               Sign in to add listings.
@@ -61,7 +68,7 @@ const AppShell = () => {
           <BookingForm
             listings={listings}
             onSubmit={createBooking}
-            isSaving={busy.createBooking}
+            isSaving={busyCreate}
             disabled={locked || listings.length === 0}
           />
           {listings.length === 0 ? (
@@ -74,7 +81,7 @@ const AppShell = () => {
         <SectionCard
           title="Listings"
           description="Manage what is available. Removing a listing also clears its bookings."
-          loading={loading}
+          loading={listingLoading}
         >
           <ListingList listings={listings} onDelete={deleteListing} canManage={!locked} />
         </SectionCard>
@@ -82,13 +89,13 @@ const AppShell = () => {
         <SectionCard
           title="Bookings"
           description="Host-side reservations you can confirm or cancel."
-          loading={loading}
+          loading={bookingLoading}
         >
           <BookingList
             bookings={bookings}
             listings={listings}
             onCancel={cancelBooking}
-            cancellingId={busy.cancelBookingId}
+            cancellingId={cancelId}
             canManage={!locked}
           />
         </SectionCard>

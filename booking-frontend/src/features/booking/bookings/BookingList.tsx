@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Booking, Listing } from '../types';
+import type { Booking, Listing } from '../types';
 
 type BookingListProps = {
   bookings: Booking[];
