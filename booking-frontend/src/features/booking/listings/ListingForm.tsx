@@ -28,20 +28,28 @@ export const ListingForm = ({
         ...blankForm,
         userId: userId ?? ""
     });
+    const [keywordsText, setKeywordsText] = useState("");
+    const [amenitiesText, setAmenitiesText] = useState("");
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
+        const keywords = keywordsText
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean);
+        const amenities = amenitiesText
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean);
         const payload: NewListingInput = {
             ...form,
-            keywords: form.keywords
-                .map((keyword) => keyword.trim())
-                .filter(Boolean),
-            amenities: form.amenities
-                .map((amenity) => amenity.trim())
-                .filter(Boolean)
+            keywords,
+            amenities
         };
         await onSubmit(payload);
         setForm({...blankForm, userId: userId ?? ""});
+        setKeywordsText("");
+        setAmenitiesText("");
     };
 
     const updateField = (
@@ -103,10 +111,8 @@ export const ListingForm = ({
                     <label htmlFor="keywords">Keywords (comma separated)</label>
                     <input
                         id="keywords"
-                        value={form.keywords.join(", ")}
-                        onChange={(e) =>
-                            handleListField("keywords", e.target.value)
-                        }
+                        value={keywordsText}
+                        onChange={(e) => setKeywordsText(e.target.value)}
                         placeholder="wifi, parking, balcony"
                         disabled={disabled}
                     />
@@ -118,10 +124,8 @@ export const ListingForm = ({
                     </label>
                     <input
                         id="amenities"
-                        value={form.amenities.join(", ")}
-                        onChange={(e) =>
-                            handleListField("amenities", e.target.value)
-                        }
+                        value={amenitiesText}
+                        onChange={(e) => setAmenitiesText(e.target.value)}
                         placeholder="Washer, Desk, Air purifier"
                         disabled={disabled}
                     />

@@ -1,11 +1,19 @@
 import {RequestHandler} from "express";
 import {bookingService} from "../services/bookingService";
-import {badRequest, created, noContent, notFound, ok, serverError} from "../shared/http";
+import {
+    badRequest,
+    created,
+    noContent,
+    notFound,
+    ok,
+    serverError
+} from "../shared/http";
 import {optionalString, requiredString, requireAll} from "../shared/validation";
 
 const validateBookingBody = (body: unknown) => {
     const payload = body as Record<string, unknown>;
     return requireAll(
+        requiredString("userId", payload.userId),
         requiredString("listingId", payload.listingId),
         requiredString("startDate", payload.startDate),
         requiredString("endDate", payload.endDate),
@@ -19,6 +27,7 @@ export const listBookings: RequestHandler = async (_req, res) => {
         const bookings = await bookingService.list();
         return ok(res, bookings);
     } catch (err) {
+        console.log("1------", err);
         return serverError(res);
     }
 };
@@ -29,6 +38,7 @@ export const getBooking: RequestHandler = async (req, res) => {
         if (!booking) return notFound(res, "Booking not found");
         return ok(res, booking);
     } catch (err) {
+        console.log("2------", err);
         return serverError(res);
     }
 };
@@ -45,6 +55,7 @@ export const createBooking: RequestHandler = async (req, res) => {
         if (message === "Listing not found") {
             return badRequest(res, message);
         }
+        console.log("3------", err);
         return serverError(res);
     }
 };
@@ -55,6 +66,18 @@ export const cancelBooking: RequestHandler = async (req, res) => {
         if (!booking) return notFound(res, "Booking not found");
         return ok(res, booking);
     } catch (err) {
+        console.log("4------", err);
+        return serverError(res);
+    }
+};
+
+export const confirmBooking: RequestHandler = async (req, res) => {
+    try {
+        const booking = await bookingService.confirm(req.params.id);
+        if (!booking) return notFound(res, "Booking not found");
+        return ok(res, booking);
+    } catch (err) {
+        console.log("confirm-booking-error", err);
         return serverError(res);
     }
 };
@@ -65,7 +88,7 @@ export const deleteBooking: RequestHandler = async (req, res) => {
         if (!removed) return notFound(res, "Booking not found");
         return noContent(res);
     } catch (err) {
+        console.log("5------", err);
         return serverError(res);
     }
 };
-

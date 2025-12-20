@@ -28,7 +28,7 @@ export const login: RequestHandler = async (req, res) => {
     const {email, password} = req.body ?? {};
     const errors = [
         isEmail("email", email),
-        requiredString("password", password, 6)
+        requiredString("password", password)
     ]
         .filter((e) => !e.valid)
         .map((e) => e.message);

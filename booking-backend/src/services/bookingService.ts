@@ -22,6 +22,9 @@ export const bookingService = {
     async cancel(id: string): Promise<Booking | null> {
         return bookingRepo.update(id, {status: "cancelled"});
     },
+    async confirm(id: string): Promise<Booking | null> {
+        return bookingRepo.update(id, {status: "confirmed"});
+    },
     async remove(id: string): Promise<boolean> {
         const existing = await bookingRepo.get(id);
         if (!existing) return false;

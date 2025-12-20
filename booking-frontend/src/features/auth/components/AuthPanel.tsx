@@ -93,18 +93,23 @@ export const AuthPanel = ({
                 </button>
             </div>
             <form className="stack" onSubmit={handleSubmit}>
-                <div className="field">
-                    <label htmlFor="name">Name</label>
-                    <input
-                        id="name"
-                        value={form.name}
-                        onChange={(e) =>
-                            setForm((prev) => ({...prev, name: e.target.value}))
-                        }
-                        placeholder="Alex Host"
-                        required
-                    />
-                </div>
+                {mode !== "signin" && (
+                    <div className="field">
+                        <label htmlFor="name">Name</label>
+                        <input
+                            id="name"
+                            value={form.name}
+                            onChange={(e) =>
+                                setForm((prev) => ({
+                                    ...prev,
+                                    name: e.target.value
+                                }))
+                            }
+                            placeholder="Alex Host"
+                            required
+                        />
+                    </div>
+                )}
                 <div className="field">
                     <label htmlFor="email">Email</label>
                     <input

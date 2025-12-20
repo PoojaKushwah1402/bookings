@@ -8,16 +8,19 @@ type BookingsController = {
   error: string | null;
   busyCreate: boolean;
   cancelId: string;
+  confirmId: string;
   createBooking: (input: BookingRequest) => Promise<void>;
   cancelBooking: (id: string) => Promise<void>;
+  confirmBooking: (id: string) => Promise<void>;
 };
 
-const initialState: Omit<BookingsController, 'createBooking' | 'cancelBooking'> = {
+const initialState: Omit<BookingsController, 'createBooking' | 'cancelBooking' | 'confirmBooking'> = {
   bookings: [],
   loading: true,
   error: null,
   busyCreate: false,
   cancelId: '',
+  confirmId: '',
 };
 
 export const useBookings = (token?: string): BookingsController => {
@@ -64,10 +67,26 @@ export const useBookings = (token?: string): BookingsController => {
     }
   }, [token]);
 
+  const confirmBooking = useCallback(async (id: string) => {
+    setState((s) => ({ ...s, confirmId: id, error: null }));
+    try {
+      const booking = await bookingService.confirmBooking(id, token);
+      setState((s) => ({
+        ...s,
+        bookings: s.bookings.map((existing) => (existing.id === id ? booking : existing)),
+      }));
+    } catch (err) {
+      setState((s) => ({ ...s, error: 'Could not confirm booking.' }));
+    } finally {
+      setState((s) => ({ ...s, confirmId: '' }));
+    }
+  }, [token]);
+
   return {
     ...state,
     createBooking,
     cancelBooking,
+    confirmBooking,
   };
 };
 

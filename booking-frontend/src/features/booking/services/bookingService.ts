@@ -27,6 +27,10 @@ export const bookingService = {
   async cancelBooking(bookingId: string, token?: string): Promise<Booking> {
     return httpClient.patch<Booking>(`/bookings/${bookingId}/cancel`, {}, withToken(token));
   },
+
+  async confirmBooking(bookingId: string, token?: string): Promise<Booking> {
+    return httpClient.patch<Booking>(`/bookings/${bookingId}/confirm`, {}, withToken(token));
+  },
 };
 
 

@@ -86,6 +86,7 @@ exports.up = (pgm) => {
             references: "users(id)",
             onDelete: "cascade"
         },
+        note: {type: "text", notNull: true},
         start_date: {type: "date", notNull: true},
         end_date: {type: "date", notNull: true},
         status: {type: "text", notNull: true},

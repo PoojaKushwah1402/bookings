@@ -1,6 +1,6 @@
 export type Listing = {
   id: string;
-  userId?: string;
+  userId: string;
   title: string;
   city: string;
   state: string;
@@ -12,7 +12,7 @@ export type Listing = {
 export type Booking = {
   id: string;
   listingId: string;
-  userId?: string;
+  userId: string;
   startDate: string;
   endDate: string;
   status: 'confirmed' | 'cancelled';

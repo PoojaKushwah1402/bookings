@@ -1,11 +1,24 @@
 import {RequestHandler} from "express";
 import {listingService} from "../services/listingService";
-import {badRequest, created, noContent, notFound, ok, serverError} from "../shared/http";
-import {arrayOfStrings, optionalString, requiredString, requireAll} from "../shared/validation";
+import {
+    badRequest,
+    created,
+    noContent,
+    notFound,
+    ok,
+    serverError
+} from "../shared/http";
+import {
+    arrayOfStrings,
+    optionalString,
+    requiredString,
+    requireAll
+} from "../shared/validation";
 
 const validateListingBody = (body: unknown) => {
     const payload = body as Record<string, unknown>;
     return requireAll(
+        requiredString("userId", payload.userId),
         requiredString("title", payload.title),
         requiredString("city", payload.city),
         requiredString("state", payload.state),
@@ -36,18 +49,21 @@ export const getListing: RequestHandler = async (req, res) => {
 
 export const createListing: RequestHandler = async (req, res) => {
     const errors = validateListingBody(req.body);
-    if (errors.length) return badRequest(res, "Invalid listing payload", errors);
+    if (errors.length)
+        return badRequest(res, "Invalid listing payload", errors);
     try {
         const listing = await listingService.create(req.body);
         return created(res, listing);
     } catch (err) {
+        console.log("error occured during listing creation", err);
         return serverError(res);
     }
 };
 
 export const updateListing: RequestHandler = async (req, res) => {
     const errors = validateListingBody(req.body);
-    if (errors.length) return badRequest(res, "Invalid listing payload", errors);
+    if (errors.length)
+        return badRequest(res, "Invalid listing payload", errors);
     try {
         const listing = await listingService.update(req.params.id, req.body);
         if (!listing) return notFound(res, "Listing not found");
@@ -66,5 +82,3 @@ export const deleteListing: RequestHandler = async (req, res) => {
         return serverError(res);
     }
 };
-
-

@@ -5,6 +5,7 @@ import type {Booking} from "../types/domain";
 const mapRow = (row: any): Booking => ({
     id: row.id,
     listingId: row.listing_id,
+    userId: row.user_id,
     startDate: row.start_date,
     endDate: row.end_date,
     status: row.status,
@@ -14,7 +15,7 @@ const mapRow = (row: any): Booking => ({
 export const bookingRepo = {
     async list(): Promise<Booking[]> {
         const result = await pool.query(
-            `select id, listing_id, start_date, end_date, status, note
+            `select id, listing_id, user_id, start_date, end_date, status, note
              from bookings
              order by created_at desc nulls last`
         );
@@ -23,7 +24,7 @@ export const bookingRepo = {
 
     async get(id: string): Promise<Booking | null> {
         const result = await pool.query(
-            `select id, listing_id, start_date, end_date, status, note
+            `select id, listing_id, user_id, start_date, end_date, status, note
              from bookings
              where id = $1`,
             [id]
@@ -34,10 +35,10 @@ export const bookingRepo = {
     async create(input: Omit<Booking, "id" | "status">): Promise<Booking> {
         const id = randomUUID();
         const result = await pool.query(
-            `insert into bookings (id, listing_id, start_date, end_date, status, note)
-             values ($1, $2, $3, $4, 'pending', $5)
-             returning id, listing_id, start_date, end_date, status, note`,
-            [id, input.listingId, input.startDate, input.endDate, input.note ?? null]
+            `insert into bookings (id, listing_id, user_id, start_date, end_date, status, note)
+             values ($1, $2, $3, $4, $5, 'pending', $6)
+             returning id, listing_id, user_id, start_date, end_date, status, note`,
+            [id, input.listingId, input.userId, input.startDate, input.endDate, input.note ?? ""]
         );
         return mapRow(result.rows[0]);
     },
@@ -54,6 +55,10 @@ export const bookingRepo = {
         if (patch.endDate !== undefined) {
             assignments.push(`end_date = $${idx++}`);
             values.push(patch.endDate);
+        }
+        if (patch.userId !== undefined) {
+            assignments.push(`user_id = $${idx++}`);
+            values.push(patch.userId);
         }
         if (patch.status !== undefined) {
             assignments.push(`status = $${idx++}`);
@@ -72,7 +77,7 @@ export const bookingRepo = {
             `update bookings
              set ${assignments.join(", ")}
              where id = $${idx}
-             returning id, listing_id, start_date, end_date, status, note`,
+             returning id, listing_id, user_id, start_date, end_date, status, note`,
             values
         );
         return result.rows[0] ? mapRow(result.rows[0]) : null;

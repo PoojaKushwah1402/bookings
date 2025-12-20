@@ -4,6 +4,7 @@ import type {Listing} from "../types/domain";
 
 const mapRow = (row: any): Listing => ({
     id: row.id,
+    userId: row.user_id,
     title: row.title,
     city: row.city,
     state: row.state,
@@ -16,6 +17,7 @@ export const listingRepo = {
     async list(): Promise<Listing[]> {
         const result = await pool.query(
             `select id,
+                    user_id,
                     title,
                     city,
                     state,
@@ -31,6 +33,7 @@ export const listingRepo = {
     async get(id: string): Promise<Listing | null> {
         const result = await pool.query(
             `select id,
+                    user_id,
                     title,
                     city,
                     state,
@@ -48,9 +51,10 @@ export const listingRepo = {
         const id = randomUUID();
         const result = await pool.query(
             `insert into listings
-                (id, title, city, state, keywords, amenities, note)
-             values ($1, $2, $3, $4, $5, $6, $7)
+                (id, user_id, title, city, state, keywords, amenities, note)
+             values ($1, $2, $3, $4, $5, $6, $7, $8)
              returning id,
+                       user_id,
                        title,
                        city,
                        state,
@@ -59,6 +63,7 @@ export const listingRepo = {
                        note`,
             [
                 id,
+                input.userId,
                 input.title,
                 input.city,
                 input.state,
@@ -111,6 +116,7 @@ export const listingRepo = {
              set ${assignments.join(", ")}
              where id = $${idx}
              returning id,
+                       user_id,
                        title,
                        city,
                        state,

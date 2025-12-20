@@ -1,10 +1,21 @@
 import {BrowserRouter, Link, Navigate, Route, Routes} from "react-router-dom";
 import {AuthPanel, useAuth} from "../../features/auth";
-import {BookingForm, BookingList, ListingForm, ListingList, SectionCard, useBookings, useListings} from "../../features/booking";
+import {
+    BookingForm,
+    BookingList,
+    ListingForm,
+    ListingList,
+    SectionCard,
+    useBookings,
+    useListings
+} from "../../features/booking";
 
 const Nav = ({signedIn}: {signedIn: boolean}) => (
     <nav className="panel" style={{marginBottom: 16}}>
-        <div className="button-row" style={{justifyContent: "space-between", alignItems: "center"}}>
+        <div
+            className="button-row"
+            style={{justifyContent: "space-between", alignItems: "center"}}
+        >
             <div className="button-row" style={{gap: 12}}>
                 <Link className="btn btn-ghost" to="/signin">
                     Auth
@@ -61,7 +72,11 @@ const ListingsPage = ({
             description="Manage what is available. Removing a listing also clears its bookings."
             loading={listingLoading}
         >
-            <ListingList listings={listings} onDelete={deleteListing} canManage={!locked} />
+            <ListingList
+                listings={listings}
+                onDelete={deleteListing}
+                canManage={!locked}
+            />
         </SectionCard>
     </div>
 );
@@ -75,7 +90,9 @@ const BookingsPage = ({
     cancelId,
     createBooking,
     cancelBooking,
-    userId
+    userId,
+    confirmBooking,
+    confirmId
 }: {
     locked: boolean;
     bookingLoading: boolean;
@@ -86,6 +103,8 @@ const BookingsPage = ({
     createBooking: (input: any) => Promise<void>;
     cancelBooking: (id: string) => Promise<void>;
     userId?: string;
+    confirmBooking: (id: string) => Promise<void>;
+    confirmId?: string;
 }) => (
     <div className="app-grid">
         <SectionCard
@@ -116,7 +135,9 @@ const BookingsPage = ({
                 listings={listings}
                 onCancel={cancelBooking}
                 cancellingId={cancelId}
+                confirmId={confirmId}
                 canManage={!locked}
+                confirmBooking={confirmBooking}
             />
         </SectionCard>
     </div>
@@ -136,12 +157,25 @@ const AuthPage = ({
     signOut: () => Promise<void>;
 }) => (
     <div className="app-grid">
-        <AuthPanel user={user} loading={loading} onSignIn={signIn} onSignOut={signOut} onSignUp={signUp} />
+        <AuthPanel
+            user={user}
+            loading={loading}
+            onSignIn={signIn}
+            onSignOut={signOut}
+            onSignUp={signUp}
+        />
     </div>
 );
 
 export const AppRoutes = () => {
-    const {user, token, loading: authLoading, signIn, signOut, signUp} = useAuth();
+    const {
+        user,
+        token,
+        loading: authLoading,
+        signIn,
+        signOut,
+        signUp
+    } = useAuth();
     const {
         listings,
         loading: listingLoading,
@@ -157,7 +191,9 @@ export const AppRoutes = () => {
         busyCreate,
         cancelId,
         createBooking,
-        cancelBooking
+        cancelBooking,
+        confirmBooking,
+        confirmId
     } = useBookings(token ?? undefined);
     const locked = !user;
 
@@ -168,10 +204,15 @@ export const AppRoutes = () => {
                     <p className="eyebrow">Booking workspace</p>
                     <h1>Host console</h1>
                     <p className="lede">
-                        Manage listings and bookings with a simple host view. Sign in to enable actions; data flows to the backend API.
+                        Manage listings and bookings with a simple host view.
+                        Sign in to enable actions; data flows to the backend
+                        API.
                     </p>
                     {listingError || bookingError ? (
-                        <div className="card" style={{borderColor: "rgba(255,110,110,0.5)"}}>
+                        <div
+                            className="card"
+                            style={{borderColor: "rgba(255,110,110,0.5)"}}
+                        >
                             {listingError || bookingError}
                         </div>
                     ) : null}
@@ -182,7 +223,15 @@ export const AppRoutes = () => {
                 <Routes>
                     <Route
                         path="/signin"
-                        element={<AuthPage user={user} loading={authLoading} signIn={signIn} signUp={signUp} signOut={signOut} />}
+                        element={
+                            <AuthPage
+                                user={user}
+                                loading={authLoading}
+                                signIn={signIn}
+                                signUp={signUp}
+                                signOut={signOut}
+                            />
+                        }
                     />
                     <Route
                         path="/listings"
@@ -217,15 +266,19 @@ export const AppRoutes = () => {
                                     cancelId={cancelId}
                                     createBooking={createBooking}
                                     cancelBooking={cancelBooking}
+                                    confirmBooking={confirmBooking}
+                                confirmId={confirmId}
                                     userId={user?.id}
                                 />
                             )
                         }
                     />
-                    <Route path="*" element={<Navigate to="/signin" replace />} />
+                    <Route
+                        path="*"
+                        element={<Navigate to="/signin" replace />}
+                    />
                 </Routes>
             </div>
         </BrowserRouter>
     );
 };
-

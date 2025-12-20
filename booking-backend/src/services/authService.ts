@@ -24,10 +24,13 @@ export const authService = {
             role: "host",
             passwordHash: input.password // TODO: hash in real implementation
         });
+        console.log(user);
         return authRepo.createSession(user);
     },
     async login(input: LoginInput): Promise<AuthSession> {
-        const user = await authRepo.findUserByEmail(input.email.trim().toLowerCase());
+        const user = await authRepo.findUserByEmail(
+            input.email.trim().toLowerCase()
+        );
         if (!user || user.passwordHash !== input.password) {
             throw new Error("Invalid credentials");
         }
@@ -40,5 +43,3 @@ export const authService = {
         return authRepo.findSession(token);
     }
 };
-
-

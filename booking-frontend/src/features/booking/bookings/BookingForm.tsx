@@ -11,6 +11,7 @@ type BookingFormProps = {
 
 const blankBooking: BookingRequest = {
   listingId: '',
+  userId: '',
   startDate: '',
   endDate: '',
   note: '',

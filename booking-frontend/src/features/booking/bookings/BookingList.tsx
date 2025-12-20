@@ -6,6 +6,8 @@ type BookingListProps = {
   listings: Listing[];
   cancellingId?: string;
   onCancel: (id: string) => Promise<void>;
+  confirmBooking: (id: string) => Promise<void>;
+  confirmId?: string;
   canManage?: boolean;
 };
 
@@ -14,6 +16,8 @@ export const BookingList = ({
   listings,
   cancellingId,
   onCancel,
+  confirmBooking,
+  confirmId,
   canManage = true,
 }: BookingListProps) => {
   const listingLookup = useMemo(
@@ -54,6 +58,13 @@ export const BookingList = ({
             ) : null}
             {!isCancelled ? (
               <div className="button-row" style={{ marginTop: 12 }}>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => confirmBooking(booking.id)}
+                  disabled={confirmId === booking.id || !canManage}
+                >
+                  {confirmId === booking.id ? 'Confirming...' : 'Confirm'}
+                </button>
                 <button
                   className="btn btn-ghost"
                   onClick={() => onCancel(booking.id)}
