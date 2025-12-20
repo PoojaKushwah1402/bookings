@@ -1,8 +1,8 @@
+import "dotenv/config";
+
 import express from "express";
 import cors from "cors";
 import routes from "./roues/index";
-import dotenv from "dotenv";
-dotenv.config();
 
 import {pool} from "./db/pool";
 
@@ -10,6 +10,12 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// simple request logger for debugging
+app.use((req, _res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+    next();
+});
 
 app.get("/health", (_req, res) => {
     res.json({status: "ok"});

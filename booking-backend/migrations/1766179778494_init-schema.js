@@ -19,6 +19,7 @@ exports.up = (pgm) => {
             default: pgm.func("gen_random_uuid()")
         },
         role: {type: "text", notNull: true},
+        name: {type: "text", notNull: true},
         created_at: {
             type: "timestamp",
             default: pgm.func("now()")

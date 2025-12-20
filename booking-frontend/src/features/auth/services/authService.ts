@@ -1,4 +1,4 @@
-import type {Credentials, User, Session} from "../types";
+import type {Credentials, Session} from "../types";
 import {httpClient} from "../../../shared/api/httpClient";
 
 const STORAGE_KEY = "booking_host_user";
@@ -33,17 +33,22 @@ export const authService = {
     async currentSession(): Promise<Session | null> {
         return read();
     },
-    async signIn(credentials: Credentials): Promise<Session> {
+    async signUp(credentials: Credentials): Promise<Session> {
         const payload = {
             name: credentials.name.trim(),
             email: credentials.email.trim().toLowerCase(),
             password: credentials.password
         };
-        // Simplify: register acts as sign-in for now. Swap to /auth/login when you want separation.
-        const session = await httpClient.post<Session>(
-            "/auth/register",
-            payload
-        );
+        const session = await httpClient.post<Session>("/auth/register", payload);
+        persist(session);
+        return session;
+    },
+    async signIn(credentials: Credentials): Promise<Session> {
+        const payload = {
+            email: credentials.email.trim().toLowerCase(),
+            password: credentials.password
+        };
+        const session = await httpClient.post<Session>("/auth/login", payload);
         persist(session);
         return session;
     },

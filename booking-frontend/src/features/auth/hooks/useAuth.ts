@@ -7,6 +7,7 @@ type UseAuthResult = {
   token: string | null;
   loading: boolean;
   signIn: (credentials: Credentials) => Promise<void>;
+  signUp: (credentials: Credentials) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -32,13 +33,19 @@ export const useAuth = (): UseAuthResult => {
     setToken(session.token);
   }, []);
 
+  const signUp = useCallback(async (credentials: Credentials) => {
+    const session: Session = await authService.signUp(credentials);
+    setUser(session.user);
+    setToken(session.token);
+  }, []);
+
   const signOut = useCallback(async () => {
     await authService.signOut(token ?? undefined);
     setUser(null);
     setToken(null);
   }, [token]);
 
-  return { user, token, loading, signIn, signOut };
+  return { user, token, loading, signIn, signUp, signOut };
 };
 
 export default useAuth;
