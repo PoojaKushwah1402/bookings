@@ -1,5 +1,6 @@
 import type {AuthSession} from "../types/domain";
 import {authRepo} from "../repositories/authRepo";
+import {hashPassword, verifyPassword} from "../shared/password";
 
 export type RegisterInput = {
     name: string;
@@ -22,7 +23,7 @@ export const authService = {
             name: input.name.trim(),
             email: input.email.trim().toLowerCase(),
             role: "host",
-            passwordHash: input.password // TODO: hash in real implementation
+            passwordHash: await hashPassword(input.password)
         });
         console.log(user);
         return authRepo.createSession(user);
@@ -31,7 +32,11 @@ export const authService = {
         const user = await authRepo.findUserByEmail(
             input.email.trim().toLowerCase()
         );
-        if (!user || user.passwordHash !== input.password) {
+        if (!user) {
+            throw new Error("Invalid credentials");
+        }
+        const ok = await verifyPassword(user.passwordHash, input.password);
+        if (!ok) {
             throw new Error("Invalid credentials");
         }
         return authRepo.createSession(user);
