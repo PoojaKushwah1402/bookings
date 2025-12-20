@@ -19,10 +19,11 @@ export const ListingList = ({ listings, onDelete, canManage = true }: ListingLis
           <p className="muted">
             {listing.city}, {listing.state}
           </p>
-          <p className="muted" style={{ marginBottom: 8 }}>
-            {listing.availability.startDate} → {listing.availability.endDate}
-            {listing.availability.note ? ` · ${listing.availability.note}` : ''}
-          </p>
+          {listing.note ? (
+            <p className="muted" style={{ marginBottom: 8 }}>
+              {listing.note}
+            </p>
+          ) : null}
 
           <div className="pill-row">
             {listing.keywords.map((keyword) => (

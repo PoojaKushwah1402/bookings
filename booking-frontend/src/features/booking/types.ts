@@ -1,22 +1,18 @@
-export type AvailabilityWindow = {
-  startDate: string;
-  endDate: string;
-  note?: string;
-};
-
 export type Listing = {
   id: string;
+  userId?: string;
   title: string;
   city: string;
   state: string;
   keywords: string[];
   amenities: string[];
-  availability: AvailabilityWindow;
+  note?: string;
 };
 
 export type Booking = {
   id: string;
   listingId: string;
+  userId?: string;
   startDate: string;
   endDate: string;
   status: 'confirmed' | 'cancelled';

@@ -10,7 +10,7 @@ import {
 import { AuthPanel, useAuth } from '../features/auth';
 
 const AppShell = () => {
-  const { user, loading: authLoading, signIn, signOut } = useAuth();
+  const { user, token, loading: authLoading, signIn, signOut } = useAuth();
   const {
     listings,
     loading: listingLoading,
@@ -18,7 +18,7 @@ const AppShell = () => {
     busyAdd,
     addListing,
     deleteListing,
-  } = useListings();
+  } = useListings(token ?? undefined);
   const {
     bookings,
     loading: bookingLoading,
@@ -27,7 +27,7 @@ const AppShell = () => {
     cancelId,
     createBooking,
     cancelBooking,
-  } = useBookings();
+  } = useBookings(token ?? undefined);
   const locked = !user;
 
   return (
@@ -53,7 +53,12 @@ const AppShell = () => {
           title="Create listing"
           description="Add a new stay with city, state, keywords, amenities, and availability."
         >
-          <ListingForm onSubmit={addListing} isSaving={busyAdd} disabled={locked} />
+          <ListingForm
+            onSubmit={(payload) => addListing({ ...payload, userId: user?.id })}
+            isSaving={busyAdd}
+            disabled={locked}
+            userId={user?.id}
+          />
           {locked ? (
             <p className="muted" style={{ marginTop: 8 }}>
               Sign in to add listings.

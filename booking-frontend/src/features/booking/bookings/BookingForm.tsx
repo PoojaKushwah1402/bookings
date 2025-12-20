@@ -6,6 +6,7 @@ type BookingFormProps = {
   onSubmit: (payload: BookingRequest) => Promise<void>;
   isSaving?: boolean;
   disabled?: boolean;
+  userId?: string;
 };
 
 const blankBooking: BookingRequest = {
@@ -15,13 +16,13 @@ const blankBooking: BookingRequest = {
   note: '',
 };
 
-export const BookingForm = ({ listings, onSubmit, isSaving, disabled }: BookingFormProps) => {
-  const [form, setForm] = useState<BookingRequest>(blankBooking);
+export const BookingForm = ({ listings, onSubmit, isSaving, disabled, userId }: BookingFormProps) => {
+  const [form, setForm] = useState<BookingRequest>({ ...blankBooking, userId: userId ?? '' });
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     await onSubmit(form);
-    setForm(blankBooking);
+    setForm({ ...blankBooking, userId: userId ?? '' });
   };
 
   const updateField = (field: keyof BookingRequest, value: string) => {
@@ -95,7 +96,7 @@ export const BookingForm = ({ listings, onSubmit, isSaving, disabled }: BookingF
         <button
           className="btn btn-ghost"
           type="button"
-          onClick={() => setForm(blankBooking)}
+          onClick={() => setForm({ ...blankBooking, userId: userId ?? '' })}
           disabled={disabled || isSaving}
         >
           Reset

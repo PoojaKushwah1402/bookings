@@ -20,18 +20,18 @@ const initialState: Omit<BookingsController, 'createBooking' | 'cancelBooking'> 
   cancelId: '',
 };
 
-export const useBookings = (): BookingsController => {
+export const useBookings = (token?: string): BookingsController => {
   const [state, setState] = useState(initialState);
 
   const load = useCallback(async () => {
     setState((s) => ({ ...s, loading: true, error: null }));
     try {
-      const data = await bookingService.getBookings();
+      const data = await bookingService.getBookings(token);
       setState((s) => ({ ...s, bookings: data, loading: false }));
     } catch (err) {
       setState((s) => ({ ...s, error: 'Unable to load bookings.', loading: false }));
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     void load();
@@ -40,19 +40,19 @@ export const useBookings = (): BookingsController => {
   const createBooking = useCallback(async (input: BookingRequest) => {
     setState((s) => ({ ...s, busyCreate: true, error: null }));
     try {
-      const booking = await bookingService.createBooking(input);
+      const booking = await bookingService.createBooking(input, token);
       setState((s) => ({ ...s, bookings: [booking, ...s.bookings] }));
     } catch (err) {
       setState((s) => ({ ...s, error: 'Could not create booking.' }));
     } finally {
       setState((s) => ({ ...s, busyCreate: false }));
     }
-  }, []);
+  }, [token]);
 
   const cancelBooking = useCallback(async (id: string) => {
     setState((s) => ({ ...s, cancelId: id, error: null }));
     try {
-      const booking = await bookingService.cancelBooking(id);
+      const booking = await bookingService.cancelBooking(id, token);
       setState((s) => ({
         ...s,
         bookings: s.bookings.map((existing) => (existing.id === id ? booking : existing)),
@@ -62,7 +62,7 @@ export const useBookings = (): BookingsController => {
     } finally {
       setState((s) => ({ ...s, cancelId: '' }));
     }
-  }, []);
+  }, [token]);
 
   return {
     ...state,
