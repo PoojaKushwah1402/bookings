@@ -1,6 +1,7 @@
 import {randomUUID} from "crypto";
 import {pool} from "../db/pool";
 import type {AuthSession, User} from "../types/domain";
+import {verifyPassword} from "../shared/password";
 
 const mapUser = (row: any): User => ({
     id: row.id,
@@ -9,7 +10,13 @@ const mapUser = (row: any): User => ({
     role: row.role
 });
 
-const sessionStore: AuthSession[] = [];
+type StoredRefresh = {
+    tokenHash: string;
+    user: User;
+    expiresAt: Date;
+};
+
+const refreshStore: StoredRefresh[] = [];
 
 export const authRepo = {
     async findUserByEmail(email: string): Promise<(User & {passwordHash: string}) | null> {
@@ -35,20 +42,38 @@ export const authRepo = {
         return mapUser(result.rows[0]);
     },
 
-    async createSession(user: User): Promise<AuthSession> {
-        const token = randomUUID();
-        const session: AuthSession = {token, user};
-        sessionStore.push(session);
-        return session;
+    async createRefreshToken(user: User, tokenHash: string, expiresAt: Date): Promise<AuthSession> {
+        refreshStore.push({tokenHash, user, expiresAt});
+        return {token: tokenHash, user};
     },
 
-    async deleteSession(token: string): Promise<void> {
-        const idx = sessionStore.findIndex((s) => s.token === token);
-        if (idx >= 0) sessionStore.splice(idx, 1);
+    async rotateRefreshToken(oldToken: string, newHash: string, expiresAt: Date, user: User): Promise<void> {
+        const idx = refreshStore.findIndex((s) => s.tokenHash === oldToken);
+        if (idx >= 0) {
+            refreshStore.splice(idx, 1);
+        }
+        refreshStore.push({tokenHash: newHash, user, expiresAt});
     },
 
-    async findSession(token: string): Promise<AuthSession | null> {
-        return sessionStore.find((s) => s.token === token) ?? null;
+    async deleteRefreshToken(token: string): Promise<void> {
+        const idx = refreshStore.findIndex((s) => s.tokenHash === token);
+        if (idx >= 0) refreshStore.splice(idx, 1);
+    },
+
+    async deleteUserRefreshTokens(userId: string): Promise<void> {
+        for (let i = refreshStore.length - 1; i >= 0; i--) {
+            if (refreshStore[i].user.id === userId) refreshStore.splice(i, 1);
+        }
+    },
+
+    async findRefreshToken(token: string): Promise<StoredRefresh | null> {
+        const found = refreshStore.find((s) => s.tokenHash === token);
+        if (!found) return null;
+        if (found.expiresAt.getTime() < Date.now()) {
+            await this.deleteRefreshToken(token);
+            return null;
+        }
+        return found;
     }
 };
 

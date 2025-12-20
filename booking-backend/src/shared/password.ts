@@ -27,3 +27,7 @@ export const verifyPassword = async (hash: string, password: string): Promise<bo
     }
 };
 
+// Convenience for refresh token hashing (reuse argon2id settings)
+export const hashToken = (token: string) => hashPassword(token);
+export const verifyToken = (hash: string, token: string) => verifyPassword(hash, token);
+

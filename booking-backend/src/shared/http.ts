@@ -15,3 +15,4 @@ export const serverError = (res: Response, message = "Something went wrong") =>
     res.status(500).json({ message });
 
 
+
